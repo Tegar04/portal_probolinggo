@@ -1,0 +1,177 @@
+/* File: /cms/login.css */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f4f8fb;
+}
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.logo {
+  width: 400px;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+.login-card {
+  background-color: #ffffff;
+  padding: 30px 25px;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.login-card label {
+  display: flex;
+  align-items: center;
+  background-color: #f1f6fa;
+  border: 1px solid #dce3eb;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.login-card .icon {
+  font-size: 18px;
+  color: #4a6278;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+.login-card input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
+  color: #2e3a59;
+}
+button[type="submit"] {
+  background-color: #2e3a59;
+  color: white;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+button[type="submit"]:hover {
+  background-color: #1f2c46;
+}
+/* Enhanced Error and Lockout Messages */
+.error-msg {
+  color: #dc3545;
+  background: #ffbfc4;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+.lockout-timer {
+  color: #856404;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+}
+/* Disabled state for locked form */
+button[type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #6c757d;
+}
+.login-card input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.login-card label:has(input:disabled) {
+  opacity: 0.6;
+  background-color: #f8f9fa;
+}
+
+/* Class untuk menghilangkan semua error styling ketika countdown selesai */
+.error-cleared .error-msg {
+  display: none !important;
+}
+.error-cleared #countdown {
+  display: none !important;
+}
+.error-cleared button[type="submit"]:disabled {
+  opacity: 1;
+  cursor: pointer;
+  background-color: #2e3a59;
+}
+.error-cleared .login-card input:disabled {
+  opacity: 1;
+  cursor: text;
+}
+.error-cleared .login-card label:has(input:disabled) {
+  opacity: 1;
+  background-color: #f1f6fa;
+}
+
+/* Tambahan untuk kenyamanan layar kecil */
+@media (max-width: 480px) {
+  .login-page {
+    padding: 15px;
+  }
+  
+  .login-card {
+    max-width: 100%;
+    padding: 30px 20px;
+  }
+  
+  .login-card input {
+    font-size: 16px;
+  }
+  
+  button[type="submit"] {
+    font-size: 16px;
+    padding: 14px;
+  }
+  
+  .error-msg,
+  .lockout-timer {
+    font-size: 14px;
+  }
+  
+  .logo {
+    width: 300px;
+  }
+}
+/* Animation for lockout timer */
+.lockout-timer {
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}

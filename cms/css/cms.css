@@ -1,0 +1,290 @@
+/* === GENERAL STYLES === */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f5f7fb;
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  width: 240px;
+  background-color: #6B7B91;
+  color: white;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar .logo-wrapper {
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+.logo-img {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.sidebar h2 {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.sidebar a {
+  color: #fff;
+  text-decoration: none;
+  margin: 10px 0;
+  display: block;
+  font-weight: 500;
+}
+
+.sidebar a.active {
+  background-color: #5cd3e2;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.sidebar a + a {
+  margin-top: 20px;
+}
+
+.logout-link {
+  color: #ccc;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* === MAIN CONTENT === */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.top-bar h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2e3a59;
+}
+
+.search-bar input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 250px;
+}
+
+/* === CARD === */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h2 {
+  font-size: 20px;
+  color: #2e3a59;
+}
+
+.btn {
+  padding: 8px 14px;
+  background-color: #2e3a59;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #1f2c46;
+}
+
+/* === TABLE === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  padding: 12px 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #f0f2f7;
+  color: #333;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #f9fafc;
+}
+
+td:nth-child(4) {
+  max-width: 150px;
+  word-wrap: break-word;
+}
+
+.logo-preview {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+  margin: auto;
+}
+
+/* === ACTIONS === */
+.actions a {
+  margin-right: 10px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.actions .edit {
+  color: #276ef1;
+}
+
+.actions .delete {
+  color: #d32f2f;
+}
+
+/* === PAGINATION === */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination a {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.pagination a.active {
+  background-color: #276ef1;
+  color: white;
+  font-weight: bold;
+  border: none;
+}
+
+/* === FOOTER === */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #888;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: #6B7B91;
+  }
+
+  .sidebar .logo-wrapper {
+    display: none;
+  }
+
+  .sidebar a {
+    margin: 5px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .logout-link {
+    order: 99;
+    margin-left: auto;
+    color: #fff;
+  }
+
+  .main-content {
+    padding: 20px 10px;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  table {
+    font-size: 12px;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .logo-preview {
+    width: 30px;
+    height: 30px;
+  }
+
+  .actions a {
+    font-size: 12px;
+    display: inline-block;
+    margin-bottom: 4px;
+  }
+
+  footer {
+    padding: 15px 10px;
+    font-size: 12px;
+  }
+}

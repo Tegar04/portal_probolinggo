@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+  <title>Portal Layanan Probolinggo Kota</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="assets/logo/favicon.ico" />
+  <!-- Preload critical images -->
+  <link rel="preload" href="assets/hero.jpg" as="image">
+  <link rel="preload" href="assets/logo/probolinggo-logo.png" as="image">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-flex">
+        <div class="header-logo">
+          <a href="index.html">
+            <img src="assets/logo/probolinggo-logo.png" alt="Logo Kota Probolinggo" class="logo" />
+          </a>
+        </div>
+        <nav class="nav-menu">
+          <ul>
+            <li><a href="index.html">Beranda</a></li>
+            <li><a href="internal.html">Portal Aplikasi Internal</a></li>
+            <li><a href="publik.html">Portal Layanan Masyarakat</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>PORTAL LAYANAN<br>PROBOLINGGO KOTA</h1>
+    </div>
+  </section>
+
+  <!-- Portal Aplikasi Internal -->
+  <section id="internal" class="section">
+    <div class="container">
+      <h2>Portal Aplikasi Internal</h2>
+      <div class="search-container">
+        <input type="text" placeholder="Cari layanan disini..." class="search-input" id="searchInternal" />
+      </div>
+      <div class="grid-container" id="internalGrid"></div>
+    </div>
+  </section>
+
+  <!-- Portal Layanan Masyarakat -->
+  <section id="publik" class="section">
+    <div class="container">
+      <h2>Portal Layanan Publik</h2>
+      <div class="search-container">
+        <input type="text" placeholder="Cari layanan disini..." class="search-input" id="searchPublik" />
+      </div>
+      <div class="grid-container" id="publikGrid"></div>
+    </div>
+  </section>
+
+  <!-- IFRAME Viewer -->
+  <section id="iframeContainer" class="iframe-fullscreen" style="display:none;">
+    <button onclick="tutupIframe()" id="iframeCloseBtn" class="iframe-close-btn">← Kembali</button>
+    <div id="iframeLoader" class="iframe-loader" aria-hidden="true">Memuat layanan...</div>
+    <iframe id="iframeViewer" title="Layanan Viewer" aria-label="Tampilan layanan digital" src="" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation" loading="lazy"></iframe>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <img src="assets/logo/probolinggo-logo.png" alt="Logo" class="footer-logo" />
+        <div class="footer-info">
+          <p>Jl. Raya Panglima Sudirman No.19, Tisnonegaran, Kec. Kanigaran,<br />
+          Kota Probolinggo, Jawa Timur 67211</p>
+          <p>📧 diskominfo@probolinggokota.go.id</p>
+          <p>📞 0335 - 422135 </p>
+          <p>Hak cipta © 2025. Website Resmi Pemerintah Kota Probolinggo.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- External JS -->
+  <script src="js/main.js" defer></script>
+</body>
+</html>

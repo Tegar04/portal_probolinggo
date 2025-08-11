@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Portal Layanan Masyarakat - Probolinggo Kota</title>
+  <link rel="stylesheet" href="css/layanan.css" />
+  <link rel="icon" href="assets/logo/favicon.ico" />
+  <!-- Preload critical images -->
+  <link rel="preload" href="assets/logo/probolinggo-logo.png" as="image">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-flex">
+        <div class="header-logo">
+          <a href="index.html">
+            <img src="assets/logo/probolinggo-logo.png" alt="Logo Kota Probolinggo" class="logo" />
+          </a>
+        </div>
+        <nav class="nav-menu">
+          <ul>
+            <li><a href="index.html">Beranda</a></li>
+            <li><a href="internal.html">Portal Aplikasi Internal</a></li>
+            <li><a href="publik.html">Portal Layanan Masyarakat</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <section class="section">
+      <div class="container">
+        <h2>Portal Layanan Masyarakat</h2>
+        <div class="search-container">
+          <input type="text" placeholder="Cari layanan disini..." class="search-input" id="searchPublik" />
+        </div>
+        <div id="bidangWrapper" class="bidang-wrapper"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Iframe Fullscreen Viewer -->
+  <section id="iframeContainer" class="iframe-fullscreen" style="display:none;">
+    <button id="btnCloseIframe" class="iframe-close-btn" aria-label="Tutup Iframe" title="Kembali ke halaman utama">← Kembali</button>
+    <div id="iframeLoader" class="iframe-loader" aria-hidden="true">Memuat layanan...</div>
+    <iframe
+      id="iframeViewer"
+      src=""
+      title="Tampilan Layanan Masyarakat"
+      role="document"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
+      loading="lazy"
+    ></iframe>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <img src="assets/logo/probolinggo-logo.png" alt="Logo" class="footer-logo" />
+        <div class="footer-info">
+          <p>Jl. Raya Panglima Sudirman No.19, Tisnonegaran, Kec. Kanigaran,<br>
+          Kota Probolinggo, Jawa Timur 67211</p>
+          <p>📧 diskominfo@probolinggokota.go.id</p>
+          <p>📞 0335 - 422135 </p>
+          <p>Hak cipta © 2025. Website Resmi Pemerintah Kota Probolinggo.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- External JS -->
+  <script src="js/layanan.js"></script>
+
+</body>
+</html>
