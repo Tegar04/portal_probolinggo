@@ -95,27 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $lock_remaining <= 0) {
   <title>Login - Portal Layanan</title>
   <link rel="stylesheet" href="/cms/css/login.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    #countdown {
-      font-weight: bold;
-      font-size: 14px;
-      color: #b91c1c;
-      background: #fee2e2;
-      padding: 8px 12px;
-      border-radius: 6px;
-      text-align: center;
-      margin-top: 10px;
-    }
-    .error-msg {
-      margin-bottom: 10px;
-    }
-    .error-cleared .error-msg {
-      display: none;
-    }
-    .error-cleared #countdown {
-      display: none;
-    }
-  </style>
 </head>
 <body>
   <div class="login-page">

@@ -175,3 +175,23 @@ button[type="submit"]:disabled {
     opacity: 1;
   }
 }
+
+#countdown {
+  font-weight: bold;
+  font-size: 14px;
+  color: #b91c1c;
+  background: #fee2e2;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-align: center;
+  margin-top: 10px;
+}
+.error-msg {
+  margin-bottom: 10px;
+}
+.error-cleared .error-msg {
+  display: none;
+}
+.error-cleared #countdown {
+  display: none;
+}
