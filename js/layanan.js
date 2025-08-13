@@ -44,7 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', () => {
       const keyword = searchInput.value.toLowerCase().trim();
       const hasilFilter = layananList.filter(item =>
-        item.nama && item.nama.toLowerCase().includes(keyword)
+        (item.nama && item.nama.toLowerCase().includes(keyword)) ||
+        (item.bidang && item.bidang.toLowerCase().includes(keyword))
       );
       tampilkanPerBidang(hasilFilter);
     });

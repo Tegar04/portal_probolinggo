@@ -109,7 +109,7 @@ include 'pagination.php';
                 }
                 if (!empty($search)) {
                   $searchSafe = mysqli_real_escape_string($conn, $search);
-                  $countQuery .= " AND nama LIKE '%$searchSafe%'";
+                  $countQuery .= " AND (nama LIKE '%$searchSafe%' OR bidang LIKE '%$searchSafe%')";
                 }
                 $result = mysqli_query($conn, $countQuery);
                 $total_data = mysqli_fetch_assoc($result)['total'];
@@ -120,7 +120,7 @@ include 'pagination.php';
                   $dataQuery .= " AND jenis='$jenis'";
                 }
                 if (!empty($search)) {
-                  $dataQuery .= " AND nama LIKE '%$searchSafe%'";
+                  $dataQuery .= " AND (nama LIKE '%$searchSafe%' OR bidang LIKE '%$searchSafe%')";
                 }
                 $dataQuery .= " ORDER BY nama ASC LIMIT $offset, $limit";
 
