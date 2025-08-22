@@ -1,25 +1,47 @@
 <?php
+
+// Atur parameter cookie sebelum session_start()
+session_set_cookie_params([
+    'lifetime' => 0, // Session akan hilang setelah browser ditutup
+    'secure' => isset($_SERVER['HTTPS']), // Hanya kirim cookie lewat HTTPS
+    'httponly' => true, // Tidak bisa diakses via JavaScript
+    'samesite' => 'Strict' // Cegah CSRF lintas situs
+]);
+
 session_start();
+
+// Security headers dasar
+header('X-Frame-Options: DENY');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: no-referrer');
+
+// CSRF Token
+if (empty($_SESSION['csrf_token'])) {
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 include '../db/koneksi.php';
 
+// Fungsi IP
 function get_ip() {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
-    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) return $_SERVER['HTTP_X_FORWARDED_FOR'];
-    return $_SERVER['REMOTE_ADDR'];
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        return trim($ips[0]);
+    }
+    return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 }
 
 $ip_address = get_ip();
 $current_time = time();
 $lock_remaining = 0;
 
-// Ambil data attempt dari database (AMAN)
 $stmt = $conn->prepare("SELECT * FROM login_attempts WHERE ip_address = ? LIMIT 1");
 $stmt->bind_param("s", $ip_address);
 $stmt->execute();
 $result_attempt = $stmt->get_result();
 $attempt_data = $result_attempt->fetch_assoc();
 
-// Jika belum ada data, buat entry baru (AMAN)
 if (!$attempt_data) {
     $stmt = $conn->prepare("INSERT INTO login_attempts (ip_address, attempts, lock_stage, lock_until, last_attempt) VALUES (?, 0, 0, 0, ?)");
     $stmt->bind_param("si", $ip_address, $current_time);
@@ -27,64 +49,72 @@ if (!$attempt_data) {
     $attempt_data = ['attempts' => 0, 'lock_stage' => 0, 'lock_until' => 0];
 }
 
-// Hitung sisa lock
 if ($current_time < $attempt_data['lock_until']) {
     $lock_remaining = $attempt_data['lock_until'] - $current_time;
     $error = "Terlalu banyak percobaan gagal. Akun terkunci selama " . ceil($lock_remaining / 60) . " menit.";
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $lock_remaining <= 0) {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    // Ambil data admin dengan prepared statement (AMAN)
-    $stmt = $conn->prepare("SELECT * FROM admin WHERE username = ? LIMIT 1");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_assoc();
-
-    if ($data && password_verify($password, $data['password'])) {
-        session_regenerate_id(true);
-        $_SESSION['login'] = true;
-        $_SESSION['last_activity'] = time();
-
-        // Reset attempt di DB (AMAN)
-        $stmt = $conn->prepare("UPDATE login_attempts SET attempts=0, lock_stage=0, lock_until=0 WHERE ip_address=?");
-        $stmt->bind_param("s", $ip_address);
-        $stmt->execute();
-
-        header("Location: index.php");
-        exit;
+    // CSRF check
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+        $error = "Permintaan tidak valid.";
     } else {
-        $new_attempts = $attempt_data['attempts'] + 1;
-        $lock_stage = $attempt_data['lock_stage'];
-        $lock_until = 0;
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
 
-        if ($new_attempts >= 3) {
-            $new_attempts = 0;
-            $lock_stage++;
+        $stmt = $conn->prepare("SELECT * FROM admin WHERE username = ? LIMIT 1");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
 
-            if ($lock_stage == 1) {
-                $lock_until = $current_time + 60; // 1 menit
-            } elseif ($lock_stage == 2) {
-                $lock_until = $current_time + (5 * 60); // 5 menit
+        if ($data && password_verify($password, $data['password'])) {
+            session_regenerate_id(true);
+            $_SESSION['login'] = true;
+            $_SESSION['last_activity'] = time();
+            $_SESSION['username'] = $data['username'];
+            $_SESSION['user_id'] = $data['id'];
+
+            $stmt = $conn->prepare("UPDATE login_attempts SET attempts=0, lock_stage=0, lock_until=0 WHERE ip_address=?");
+            $stmt->bind_param("s", $ip_address);
+            $stmt->execute();
+
+            header("Location: index.php");
+            exit;
+        } else {
+            $new_attempts = $attempt_data['attempts'] + 1;
+            $lock_stage = $attempt_data['lock_stage'];
+            $lock_until = 0;
+
+            if ($new_attempts >= 3) {
+                $new_attempts = 0;
+                $lock_stage++;
+
+                if ($lock_stage == 1) {
+                    $lock_until = $current_time + 60;
+                } elseif ($lock_stage == 2) {
+                    $lock_until = $current_time + (5 * 60);
+                } else {
+                    $lock_stage = 3;
+                    $lock_until = $current_time + (10 * 60);
+                }
+
+                $lock_remaining = $lock_until - $current_time;
+                $error = "Terlalu banyak percobaan gagal. Akun terkunci selama " . ceil($lock_remaining / 60) . " menit.";
             } else {
-                $lock_stage = 3;
-                $lock_until = $current_time + (10 * 60); // 10 menit
+                $error = "Email atau password salah! Percobaan ke {$new_attempts} dari 3.";
             }
 
-            $lock_remaining = $lock_until - $current_time;
-            $error = "Terlalu banyak percobaan gagal. Akun terkunci selama " . ceil($lock_remaining / 60) . " menit.";
-        } else {
-            $error = "Email atau password salah! Percobaan ke {$new_attempts} dari 3.";
+            $stmt = $conn->prepare("UPDATE login_attempts SET attempts=?, lock_stage=?, lock_until=?, last_attempt=? WHERE ip_address=?");
+            $stmt->bind_param("iiiis", $new_attempts, $lock_stage, $lock_until, $current_time, $ip_address);
+            $stmt->execute();
         }
-
-        // Update attempt di DB (AMAN)
-        $stmt = $conn->prepare("UPDATE login_attempts SET attempts=?, lock_stage=?, lock_until=?, last_attempt=? WHERE ip_address=?");
-        $stmt->bind_param("iiiis", $new_attempts, $lock_stage, $lock_until, $current_time, $ip_address);
-        $stmt->execute();
     }
+}
+
+// Helper escape output
+function e($str) {
+  return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 ?>
 <!DOCTYPE html>
@@ -104,8 +134,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $lock_remaining <= 0) {
 
     <div class="login-card" id="loginCard">
       <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
+
         <?php if (isset($error)): ?>
-          <p id="errorMsg" class="error-msg"><?= $error ?></p>
+          <p id="errorMsg" class="error-msg"><?= e($error) ?></p>
           <?php if ($lock_remaining > 0): ?>
             <div id="countdown"></div>
           <?php endif; ?>
@@ -130,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $lock_remaining <= 0) {
 
   <?php if ($lock_remaining > 0): ?>
   <script>
-    let remaining = <?= $lock_remaining ?>;
+    let remaining = <?= (int)$lock_remaining ?>;
     const btn = document.getElementById('loginBtn');
     const countdownEl = document.getElementById('countdown');
     const errorEl = document.getElementById('errorMsg');

@@ -19,23 +19,45 @@ $_SESSION['last_activity'] = time();
 include '../db/koneksi.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+  // ✅ Cek CSRF
+  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    $_SESSION['error'] = "Token CSRF tidak valid.";
+    header("Location: tambah.php?jenis=" . urlencode($_POST['jenis'] ?? 'publik'));
+    exit;
+  }
+
   // Ambil dan sanitasi input
   $nama = trim($_POST['nama'] ?? '');
   $jenis = $_POST['jenis'] ?? '';
-  $bidang = $_POST['bidang'] ?? '';
+  $bidang = trim($_POST['bidang'] ?? '');
   $url = trim($_POST['url'] ?? '');
   $highlight = isset($_POST['highlight']) ? 1 : 0;
 
-  // Validasi nilai 'jenis' harus publik atau internal
+  // Validasi nilai 'jenis'
   if (!in_array($jenis, ['publik', 'internal'])) {
     $_SESSION['error'] = "Jenis layanan tidak valid.";
     header("Location: tambah.php?jenis=" . urlencode($jenis));
     exit;
   }
 
-  // Validasi input wajib diisi
+  // Validasi input wajib
   if ($nama === '' || $url === '' || $bidang === '') {
     $_SESSION['error'] = "Semua field wajib diisi.";
+    header("Location: tambah.php?jenis=" . urlencode($jenis));
+    exit;
+  }
+
+  // Validasi panjang field
+  if (strlen($nama) > 100 || strlen($bidang) > 100 || strlen($url) > 255) {
+    $_SESSION['error'] = "Input terlalu panjang.";
+    header("Location: tambah.php?jenis=" . urlencode($jenis));
+    exit;
+  }
+
+  // Validasi URL
+  if (!filter_var($url, FILTER_VALIDATE_URL)) {
+    $_SESSION['error'] = "URL tidak valid.";
     header("Location: tambah.php?jenis=" . urlencode($jenis));
     exit;
   }
@@ -69,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       exit;
     }
 
-    $logo_name = uniqid('logo_') . '.' . $ext;
+    $logo_name = uniqid('logo_', true) . '.' . $ext;
     $logo_path = "../assets/layanan/" . $logo_name;
 
     if (!move_uploaded_file($tmp, $logo_path)) {
@@ -83,11 +105,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit;
   }
 
-  // Simpan ke database
+  // Simpan ke database (✅ highlight = integer)
   $query = "INSERT INTO layanan (nama, jenis, url, logo, highlight, bidang) VALUES (?, ?, ?, ?, ?, ?)";
   $stmt = $conn->prepare($query);
   $logo_name = basename($logo_path);
-  $stmt->bind_param("ssssss", $nama, $jenis, $url, $logo_name, $highlight, $bidang);
+  $stmt->bind_param("ssssis", $nama, $jenis, $url, $logo_name, $highlight, $bidang);
 
   if ($stmt->execute()) {
     header("Location: index.php?jenis=" . urlencode($jenis));

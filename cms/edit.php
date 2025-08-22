@@ -21,8 +21,13 @@ include '../db/koneksi.php';
 $id = intval($_GET['id'] ?? 0);
 $jenis = $_GET['jenis'] ?? '';
 
-$query = mysqli_query($conn, "SELECT * FROM layanan WHERE id = $id");
-$data = mysqli_fetch_assoc($query);
+// Ambil data pakai prepared statement
+$stmt = $conn->prepare("SELECT * FROM layanan WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$data = $result->fetch_assoc();
+$stmt->close();
 
 if (!$data) {
   die("Data tidak ditemukan.");
@@ -53,12 +58,13 @@ if (!in_array($jenis, ['publik', 'internal'])) {
     <div>
       <div class="logo-wrapper">
         <a href="index.php">
-            <img src="../assets/logo/probolinggo-logo.png" alt="Logo" class="logo-img" style="cursor:pointer;">
+          <img src="../assets/logo/probolinggo-logo.png" alt="Logo" class="logo-img" style="cursor:pointer;">
         </a>
       </div>
       <a href="index.php" class="<?= $jenis === '' ? 'active' : '' ?>">Semua Layanan</a>
       <a href="index.php?jenis=publik" class="<?= $jenis === 'publik' ? 'active' : '' ?>">Layanan Publik</a>
       <a href="index.php?jenis=internal" class="<?= $jenis === 'internal' ? 'active' : '' ?>">Aplikasi Internal</a>
+      <a href="slider.php" class="<?= basename($_SERVER['PHP_SELF']) === 'slider.php' ? 'active' : '' ?>">Slider Header</a>
     </div>
     <a href="logout.php" class="logout-link">Logout</a>
   </aside>
@@ -74,7 +80,7 @@ if (!in_array($jenis, ['publik', 'internal'])) {
     <?php endif; ?>
 
     <form action="update.php" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="id" value="<?= $data['id'] ?>">
+      <input type="hidden" name="id" value="<?= htmlspecialchars($data['id']) ?>">
       <input type="hidden" name="jenis" value="<?= htmlspecialchars($jenis) ?>">
 
       <div class="form-group">

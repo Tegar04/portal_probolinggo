@@ -147,6 +147,39 @@ input[type="file"] {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.alert-box.success {
+  background-color: #e6ffed;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+  border-left: 6px solid #4caf50;
+}
+
+.alert-box.error {
+  background-color: #ffe5e5;
+  color: #a94442;
+  border: 1px solid #f5c2c2;
+  border-left: 6px solid #f44336;
+}
+
+.btn-secondary {
+  padding: 12px 20px;
+  background-color: #e0e0e0;
+  border: none;
+  color: #333;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-secondary:hover {
+  background-color: #c9c9c9;
+  color: #111;
+}
+
 @media (max-width: 720px) {
   .sidebar {
     height: 100vh; /* Pastikan sidebar full tinggi layar */

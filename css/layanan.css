@@ -271,6 +271,36 @@ html.no-scroll {
   overflow: hidden;
 }
 
+/* Tombol Kembali ke Atas */
+#backToTopBtn {
+  display: none; /* Awalnya tersembunyi */
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 1100;
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: #fff;
+  border: none;
+  outline: none;
+  padding: 14px 16px;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+  transition: all 0.3s ease;
+}
+
+#backToTopBtn:hover {
+  background: linear-gradient(135deg, #43a047, #1b5e20);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+}
+
+#backToTopBtn:active {
+  transform: scale(0.95);
+}
+
 /* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
   /* Header Mobile Fix */

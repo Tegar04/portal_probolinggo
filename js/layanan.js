@@ -131,15 +131,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (bidangMap['']) {
-      bidangWrapper.appendChild(renderBidangSection('Layanan Umum', bidangMap['']));
+      bidangWrapper.appendChild(renderBidangSectionSafe('Layanan Umum', bidangMap['']));
       delete bidangMap[''];
     }
 
     Object.keys(bidangMap).sort().forEach(bidang => {
-      bidangWrapper.appendChild(renderBidangSection(bidang, bidangMap[bidang]));
+      bidangWrapper.appendChild(renderBidangSectionSafe(bidang, bidangMap[bidang]));
     });
   }
 
+  // --- Fungsi baru: versi aman tanpa innerHTML ---
+  function renderBidangSectionSafe(judul, layanan) {
+    const section = document.createElement('div');
+    section.classList.add('bidang-section');
+
+    const title = document.createElement('h3');
+    title.className = 'bidang-title';
+    title.textContent = judul;
+    section.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid-container';
+
+    layanan
+      .filter(item => item && item.nama && item.url && item.hash)
+      .forEach(item => {
+        const link = document.createElement('a');
+        link.className = 'layanan-card';
+        link.href = "javascript:void(0);";
+        link.title = item.nama;
+        link.addEventListener('click', () => tampilkanIframe(item.url, item.hash));
+
+        const logoWrapper = document.createElement('div');
+        logoWrapper.className = 'logo-wrapper';
+
+        const img = document.createElement('img');
+
+        // Normalisasi path (ubah "\" ke "/")
+        let logoPath = (item.logo || '').replace(/\\/g, "/");
+        if (logoPath.startsWith("assets/layanan/")) {
+          img.src = logoPath;
+        } else {
+          img.src = "assets/layanan/" + logoPath;
+        }
+
+        img.alt = item.nama;
+        img.onerror = () => { img.src = "assets/logo/default.png"; };
+
+        logoWrapper.appendChild(img);
+
+        const span = document.createElement('span');
+        span.textContent = item.nama;
+
+        link.appendChild(logoWrapper);
+        link.appendChild(span);
+
+        grid.appendChild(link);
+      });
+
+    section.appendChild(grid);
+    return section;
+  }
+
+  // --- Fungsi lama masih ada (tidak dihapus) ---
   function renderBidangSection(judul, layanan) {
     const section = document.createElement('div');
     section.classList.add('bidang-section');
@@ -182,4 +236,22 @@ document.addEventListener('DOMContentLoaded', () => {
       tutupIframe();
     }
   });
+
+  // --- Tombol Kembali ke Atas ---
+  const backToTopBtn = document.getElementById("backToTopBtn");
+
+  if (backToTopBtn) {
+    window.addEventListener("scroll", () => {
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        backToTopBtn.style.display = "block";
+      } else {
+        backToTopBtn.style.display = "none";
+      }
+    });
+
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
 });

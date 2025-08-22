@@ -45,6 +45,7 @@ include 'pagination.php';
         <a href="index.php" class="<?= !isset($_GET['jenis']) ? 'active' : '' ?>">Semua Layanan</a>
         <a href="?jenis=publik" class="<?= ($_GET['jenis'] ?? '') === 'publik' ? 'active' : '' ?>">Layanan Publik</a>
         <a href="?jenis=internal" class="<?= ($_GET['jenis'] ?? '') === 'internal' ? 'active' : '' ?>">Aplikasi Internal</a>
+        <a href="slider.php" class="<?= basename($_SERVER['PHP_SELF']) === 'slider.php' ? 'active' : '' ?>">Slider Header</a>
       </div>
       <a href="logout.php" class="logout-link">Logout</a>
     </aside>

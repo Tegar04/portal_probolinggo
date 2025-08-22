@@ -2,14 +2,19 @@
 header('Content-Type: application/json');
 include '../db/koneksi.php';
 
-// Kunci rahasia untuk membuat hash, jangan share ke client!
-define('SECRET_KEY', 'KUNCI_RAHASIA_SANGAT_AMAN');
+// Load secret key dari environment (bukan hardcode di file)
+$secretKey = getenv('SECRET_KEY') ?: 'default_fallback_key';
+
+// Batasi origin agar API tidak bisa diambil bebas dari luar
+header("Access-Control-Allow-Origin: https://portal.probolinggokota.go.id");
+header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Headers: Content-Type");
 
 $jenis = $_GET['jenis'] ?? '';
 $highlightOnly = isset($_GET['highlight']) && $_GET['highlight'] == '1';
 
-// Cek jenis request valid
-if (!in_array($jenis, ['publik', 'internal'])) {
+// Validasi input jenis
+if (!in_array($jenis, ['publik', 'internal'], true)) {
     echo json_encode([]);
     exit;
 }
@@ -28,8 +33,20 @@ $result = $stmt->get_result();
 
 $data = [];
 while ($row = $result->fetch_assoc()) {
+    // Sanitasi output agar aman dari XSS
+    $row['nama'] = htmlspecialchars($row['nama'], ENT_QUOTES, 'UTF-8');
+    $row['logo'] = htmlspecialchars($row['logo'], ENT_QUOTES, 'UTF-8');
+
+    // Validasi dan sanitasi URL
+    if (filter_var($row['url'], FILTER_VALIDATE_URL)) {
+        $row['url'] = $row['url'];
+    } else {
+        $row['url'] = '';
+    }
+
     // Buat hash verifikasi untuk URL
-    $row['hash'] = hash_hmac('sha256', $row['url'], SECRET_KEY);
+    $row['hash'] = hash_hmac('sha256', $row['url'], $secretKey);
+
     $data[] = $row;
 }
 

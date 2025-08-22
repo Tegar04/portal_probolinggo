@@ -18,6 +18,7 @@ $_SESSION['last_activity'] = time();
 
 include '../db/koneksi.php';
 
+// Sanitasi input
 $id = intval($_POST['id'] ?? 0);
 $nama = trim($_POST['nama'] ?? '');
 $url = trim($_POST['url'] ?? '');
@@ -26,18 +27,32 @@ $bidang = trim($_POST['bidang'] ?? '');
 $highlight = isset($_POST['highlight']) ? 1 : 0;
 
 if (!in_array($jenis, ['publik', 'internal'])) {
-  die("Jenis layanan tidak valid.");
+  $_SESSION['error'] = "Jenis layanan tidak valid.";
+  header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
+  exit;
 }
 
-// Ambil data lama
-$result = mysqli_query($conn, "SELECT logo FROM layanan WHERE id = $id");
-$data = mysqli_fetch_assoc($result);
+// Ambil data lama (gunakan prepared statement)
+$stmt = $conn->prepare("SELECT logo FROM layanan WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$data = $result->fetch_assoc();
+$stmt->close();
+
+if (!$data) {
+  $_SESSION['error'] = "Data tidak ditemukan.";
+  header("Location: index.php?jenis=" . urlencode($jenis));
+  exit;
+}
+
 $logoLama = $data['logo'] ?? '';
 $logoName = $logoLama;
 
 $uploadDir = "../assets/layanan/";
 
-if (isset($_FILES['logo']) && $_FILES['logo']['name']) {
+// Jika upload logo baru
+if (!empty($_FILES['logo']['name'])) {
   $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
   $maxSize = 1 * 1024 * 1024;
 
@@ -47,24 +62,25 @@ if (isset($_FILES['logo']) && $_FILES['logo']['name']) {
   $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
   if (!in_array($fileExt, $allowed)) {
-    $_SESSION['error'] = "Format file tidak diizinkan. Hanya JPG, PNG, GIF, WEBP.";
-    header("Location: edit.php?id=$id&jenis=$jenis");
+    $_SESSION['error'] = "Format file tidak diizinkan. Hanya JPG, JPEG, PNG, GIF, WEBP.";
+    header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
     exit;
   }
 
   if ($fileSize > $maxSize) {
     $_SESSION['error'] = "Ukuran file terlalu besar. Maksimal 1MB.";
-    header("Location: edit.php?id=$id&jenis=$jenis");
+    header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
     exit;
   }
 
   if (!getimagesize($fileTmp)) {
     $_SESSION['error'] = "File bukan gambar valid.";
-    header("Location: edit.php?id=$id&jenis=$jenis");
+    header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
     exit;
   }
 
-  if (file_exists($uploadDir . $logoLama)) {
+  // Hapus logo lama jika ada
+  if ($logoLama && file_exists($uploadDir . $logoLama)) {
     unlink($uploadDir . $logoLama);
   }
 
@@ -73,20 +89,20 @@ if (isset($_FILES['logo']) && $_FILES['logo']['name']) {
 
   if (!move_uploaded_file($fileTmp, $targetPath)) {
     $_SESSION['error'] = "Gagal mengunggah logo.";
-    header("Location: edit.php?id=$id&jenis=$jenis");
+    header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
     exit;
   }
 }
 
-// Simpan perubahan
+// Simpan perubahan (gunakan prepared statement)
 $stmt = $conn->prepare("UPDATE layanan SET nama=?, url=?, logo=?, bidang=?, highlight=? WHERE id=?");
 $stmt->bind_param("ssssii", $nama, $url, $logoName, $bidang, $highlight, $id);
 
 if ($stmt->execute()) {
-  header("Location: index.php?jenis=$jenis");
+  header("Location: index.php?jenis=" . urlencode($jenis));
   exit;
 } else {
   $_SESSION['error'] = "Gagal menyimpan perubahan.";
-  header("Location: edit.php?id=$id&jenis=$jenis");
+  header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
   exit;
 }
