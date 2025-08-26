@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!Array.isArray(data)) throw new Error("Data bukan array");
       layananList = data;
       tampilkanPerBidang(data);
+      initTooltipSystem();
     })
     .catch(err => {
       console.error('Error loading layanan:', err);
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (item.deskripsi && item.deskripsi.toLowerCase().includes(keyword))
       );
       tampilkanPerBidang(hasilFilter);
+      initTooltipSystem(); // Re-init tooltip after search
     });
   }
 
@@ -97,6 +99,55 @@ document.addEventListener('DOMContentLoaded', () => {
     iframeContainer.escapeListener = escapeListener;
   };
 
+  // Show info modal
+  window.tampilkanInfoModal = function(nama, deskripsi, bidang) {
+    const modal = createInfoModal(nama, deskripsi, bidang);
+    document.body.appendChild(modal);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+      modal.classList.add('show');
+    });
+    
+    // Close handlers
+    const closeBtn = modal.querySelector('.info-modal-close');
+    const overlay = modal.querySelector('.info-modal-overlay');
+    
+    const closeModal = () => {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        document.body.removeChild(modal);
+      }, 300);
+    };
+    
+    closeBtn.onclick = closeModal;
+    overlay.onclick = closeModal;
+    
+    // Escape key
+    const escapeHandler = (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        document.removeEventListener('keydown', escapeHandler);
+      }
+    };
+    document.addEventListener('keydown', escapeHandler);
+  };
+
+  function createInfoModal(nama, deskripsi, bidang) {
+    const modal = document.createElement('div');
+    modal.className = 'info-modal';
+    modal.innerHTML = `
+      <div class="info-modal-overlay"></div>
+      <div class="info-modal-content">
+        <button class="info-modal-close">&times;</button>
+        <h3 class="info-modal-title">${nama}</h3>
+        <div class="info-modal-badge">${bidang || 'Layanan Umum'}</div>
+        <div class="info-modal-description">${deskripsi || 'Tidak ada deskripsi tersedia'}</div>
+      </div>
+    `;
+    return modal;
+  }
+
   function tutupIframe() {
     if (!iframe || !iframeContainer) return;
 
@@ -141,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Fungsi baru: versi aman tanpa innerHTML dengan deskripsi ---
+  // --- Fungsi baru: versi aman dengan info button dan tooltip ---
   function renderBidangSectionSafe(judul, layanan) {
     const section = document.createElement('div');
     section.classList.add('bidang-section');
@@ -157,25 +208,25 @@ document.addEventListener('DOMContentLoaded', () => {
     layanan
       .filter(item => item && item.nama && item.url && item.hash)
       .forEach(item => {
+        const cardWrapper = document.createElement('div');
+        cardWrapper.className = 'layanan-card-wrapper';
+
         const link = document.createElement('a');
         link.className = 'layanan-card';
         link.href = "javascript:void(0);";
-        link.title = item.nama;
+        link.title = `Klik untuk membuka ${item.nama}`;
         link.addEventListener('click', () => tampilkanIframe(item.url, item.hash));
 
         const logoWrapper = document.createElement('div');
         logoWrapper.className = 'logo-wrapper';
 
         const img = document.createElement('img');
-
-        // Normalisasi path (ubah "\" ke "/")
         let logoPath = (item.logo || '').replace(/\\/g, "/");
         if (logoPath.startsWith("assets/layanan/")) {
           img.src = logoPath;
         } else {
           img.src = "assets/layanan/" + logoPath;
         }
-
         img.alt = item.nama;
         img.onerror = () => { img.src = "assets/logo/default.png"; };
 
@@ -185,53 +236,86 @@ document.addEventListener('DOMContentLoaded', () => {
         namaSpan.className = 'layanan-nama';
         namaSpan.textContent = item.nama;
 
-        // Tambahkan deskripsi
+        // Deskripsi dengan batasan karakter yang lebih baik
         const deskripsiSpan = document.createElement('span');
         deskripsiSpan.className = 'layanan-deskripsi';
-        deskripsiSpan.textContent = item.deskripsi || 'Tidak ada deskripsi tersedia';
-        deskripsiSpan.title = item.deskripsi || 'Tidak ada deskripsi tersedia'; // Tooltip
+        const fullDesc = item.deskripsi || 'Tidak ada deskripsi tersedia';
+        const shortDesc = fullDesc.length > 60 ? fullDesc.substring(0, 60) + '...' : fullDesc;
+        deskripsiSpan.textContent = shortDesc;
+
+        // Info button
+        const infoBtn = document.createElement('button');
+        infoBtn.className = 'layanan-info-btn';
+        infoBtn.innerHTML = 'ℹ';
+        infoBtn.title = 'Lihat detail lengkap';
+        infoBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          tampilkanInfoModal(item.nama, fullDesc, item.bidang);
+        });
 
         link.appendChild(logoWrapper);
         link.appendChild(namaSpan);
         link.appendChild(deskripsiSpan);
+        
+        cardWrapper.appendChild(link);
+        cardWrapper.appendChild(infoBtn);
 
-        grid.appendChild(link);
+        // Custom tooltip
+        if (fullDesc.length > 60) {
+          createCustomTooltip(cardWrapper, fullDesc);
+        }
+
+        grid.appendChild(cardWrapper);
       });
 
     section.appendChild(grid);
     return section;
   }
 
-  // --- Fungsi lama dengan deskripsi (untuk kompatibilitas) ---
-  function renderBidangSection(judul, layanan) {
-    const section = document.createElement('div');
-    section.classList.add('bidang-section');
+  // Custom tooltip system
+  function createCustomTooltip(element, text) {
+    element.addEventListener('mouseenter', (e) => {
+      if (window.innerWidth < 768) return; // No tooltip on mobile
+      
+      const tooltip = document.createElement('div');
+      tooltip.className = 'custom-tooltip';
+      tooltip.textContent = text;
+      document.body.appendChild(tooltip);
+      
+      const rect = element.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      
+      let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+      let top = rect.top - tooltipRect.height - 10;
+      
+      // Keep tooltip in viewport
+      if (left < 10) left = 10;
+      if (left + tooltipRect.width > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipRect.width - 10;
+      }
+      if (top < 10) {
+        top = rect.bottom + 10;
+        tooltip.classList.add('bottom');
+      }
+      
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+      
+      requestAnimationFrame(() => tooltip.classList.add('show'));
+    });
+    
+    element.addEventListener('mouseleave', () => {
+      const tooltip = document.querySelector('.custom-tooltip');
+      if (tooltip) {
+        tooltip.classList.remove('show');
+        setTimeout(() => tooltip.remove(), 200);
+      }
+    });
+  }
 
-    const title = document.createElement('h3');
-    title.className = 'bidang-title';
-    title.textContent = judul;
-
-    const grid = document.createElement('div');
-    grid.className = 'grid-container';
-
-    grid.innerHTML = layanan
-      .filter(item => item && item.nama && item.url && item.hash)
-      .map(item => `
-        <a class="layanan-card" href="javascript:void(0);" 
-           onclick="tampilkanIframe('${item.url}', '${item.hash}')" 
-           title="${item.nama}">
-          <div class="logo-wrapper">
-            <img src="assets/layanan/${item.logo}" alt="${item.nama}" 
-                 onerror="this.src='assets/logo/default.png'" />
-          </div>
-          <span class="layanan-nama">${item.nama}</span>
-          <span class="layanan-deskripsi" title="${item.deskripsi || 'Tidak ada deskripsi tersedia'}">${item.deskripsi || 'Tidak ada deskripsi tersedia'}</span>
-        </a>
-      `).join('');
-
-    section.appendChild(title);
-    section.appendChild(grid);
-    return section;
+  function initTooltipSystem() {
+    // Remove existing tooltips
+    document.querySelectorAll('.custom-tooltip').forEach(tip => tip.remove());
   }
 
   // Back button handler

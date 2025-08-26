@@ -119,8 +119,8 @@ body {
 }
 
 .main-title h1 {
-  font-size: 2.5rem;       /* diperbesar */
-  font-weight: 800;        /* lebih tebal */
+  font-size: 2.5rem;
+  font-weight: 800;
   color: #222;
   text-transform: uppercase;
   line-height: 1.4;
@@ -142,7 +142,7 @@ body {
   border-radius: 2px;
 }
 
-/* Tombol navigasi */
+/* Navigation buttons */
 .hero-slider .prev,
 .hero-slider .next {
   position: absolute;
@@ -166,7 +166,7 @@ body {
   background: rgba(0,0,0,0.8);
 }
 
-/* Dots indikator */
+/* Dots indicator */
 .hero-slider .dots {
   position: absolute;
   bottom: 20px;
@@ -228,10 +228,16 @@ body {
   margin: 5px 0 15px;
 }
 
-/* Card */
+/* Card Wrapper for positioning info button */
+.card-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Enhanced Card */
 .card {
   width: 220px;
-  min-height: 280px;
+  min-height: 320px;
   padding: 20px;
   text-align: center;
   background: #fff;
@@ -240,11 +246,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
 }
 
 .card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  border-color: #e3f2fd;
 }
 
 .logo-wrapper {
@@ -257,6 +267,7 @@ body {
   border-radius: 8px;
   background-color: #f9f9f9;
   margin-bottom: 15px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
 .logo-wrapper img {
@@ -267,9 +278,33 @@ body {
 
 .card-title {
   font-size: 1.1rem;
+  font-weight: 600;
   margin: 10px 0;
   height: 40px;
   overflow: hidden;
+  line-height: 1.3;
+  color: #333;
+}
+
+.card-description {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.4;
+  margin: 10px 0;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  min-height: 60px;
+  text-align: center;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.card-description:hover {
+  color: #555;
 }
 
 .card-button {
@@ -284,10 +319,194 @@ body {
   font-size: 0.9rem;
   transition: background-color 0.3s ease;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .card-button:hover {
   background-color: #00682c;
+}
+
+/* Info Button */
+.card-info-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 123, 255, 0.9);
+  color: white;
+  border: none;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: scale(0.8);
+  z-index: 10;
+}
+
+.card-wrapper:hover .card-info-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card-info-btn:hover {
+  background: rgba(0, 123, 255, 1);
+  transform: scale(1.1);
+}
+
+/* Custom Tooltip */
+.custom-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  max-width: 280px;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.custom-tooltip.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.custom-tooltip.bottom {
+  transform: translateY(-5px);
+}
+
+.custom-tooltip.bottom.show {
+  transform: translateY(0);
+}
+
+.custom-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.9);
+}
+
+.custom-tooltip.bottom::before {
+  top: 100%;
+  bottom: auto;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  border-bottom-color: transparent;
+}
+
+/* Info Modal */
+.info-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.info-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.info-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.info-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  max-width: 450px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+}
+
+.info-modal.show .info-modal-content {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.info-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.info-modal-close:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.info-modal-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  padding-right: 40px;
+  color: #333;
+  line-height: 1.3;
+}
+
+.info-modal-badge {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.info-modal-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555;
+  text-align: left;
+  white-space: pre-wrap;
 }
 
 /* Footer */
@@ -320,7 +539,7 @@ body {
 }
 
 .more-link {
-  text-align: center;   /* ubah dari right ke center */
+  text-align: center;
   margin-top: 20px;
 }
 
@@ -407,9 +626,9 @@ html.no-scroll {
   100% { opacity: 1; }
 }
 
-/* Tombol Kembali ke Atas */
+/* Back to Top Button */
 #backToTopBtn {
-  display: none; /* Awalnya tersembunyi */
+  display: none;
   position: fixed;
   bottom: 25px;
   right: 25px;
@@ -436,26 +655,6 @@ html.no-scroll {
 #backToTopBtn:active {
   transform: scale(0.95);
 }
-
-/* Responsive adjustment */
-@media (max-width: 768px) {
-  #backToTopBtn {
-    bottom: 20px;
-    right: 20px;
-    padding: 12px 14px;
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 480px) {
-  #backToTopBtn {
-    bottom: 15px;
-    right: 15px;
-    padding: 10px 12px;
-    font-size: 16px;
-  }
-}
-
 
 /* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
@@ -510,7 +709,7 @@ html.no-scroll {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: scroll; /* Fix untuk mobile */
+    background-attachment: scroll;
     height: 300px;
     display: flex;
     align-items: center;
@@ -552,7 +751,7 @@ html.no-scroll {
     width: calc(50% - 10px);
     min-width: 150px;
     max-width: 200px;
-    min-height: 250px;
+    min-height: 290px;
     padding: 15px;
   }
 
@@ -567,9 +766,44 @@ html.no-scroll {
     line-height: 1.3;
   }
 
+  .card-description {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 2;
+    min-height: 40px;
+  }
+
   .card-button {
     padding: 6px 12px;
     font-size: 0.85rem;
+  }
+
+  .card-info-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    top: 5px;
+    right: 5px;
+    opacity: 1; /* Always visible on mobile */
+  }
+
+  /* Hide custom tooltip on mobile */
+  .custom-tooltip {
+    display: none;
+  }
+
+  /* Modal responsive */
+  .info-modal-content {
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  .info-modal-title {
+    font-size: 1.1rem;
+    padding-right: 35px;
+  }
+
+  .info-modal-description {
+    font-size: 0.9rem;
   }
 
   /* Footer Mobile */
@@ -609,6 +843,14 @@ html.no-scroll {
     font-size: 13px;
     padding: 10px 15px;
   }
+
+  /* Back to Top Button Mobile */
+  #backToTopBtn {
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 14px;
+    font-size: 18px;
+  }
 }
 
 /* Extra small devices */
@@ -626,6 +868,7 @@ html.no-scroll {
     width: calc(100% - 30px);
     max-width: 280px;
     margin: 0 15px;
+    min-height: 270px;
   }
 
   .grid-container {
@@ -643,6 +886,23 @@ html.no-scroll {
 
   .section h2 {
     font-size: 1.3rem;
+  }
+
+  .card-description {
+    font-size: 0.75rem;
+    margin: 8px 0;
+    min-height: 35px;
+  }
+
+  .info-modal-content {
+    padding: 18px;
+  }
+
+  #backToTopBtn {
+    bottom: 15px;
+    right: 15px;
+    padding: 10px 12px;
+    font-size: 16px;
   }
 }
 
@@ -665,64 +925,35 @@ html.no-scroll {
     left: 10px;
     padding: 8px 12px;
   }
-}
 
-/* Tambahkan CSS ini ke file style.css setelah .card-title */
-
-.card-description {
-  font-size: 0.85rem;
-  color: #666;
-  line-height: 1.4;
-  margin: 10px 0;
-  flex: 1;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-  min-height: 60px;
-}
-
-.card-description:hover {
-  color: #555;
-}
-
-/* Update card untuk mengakomodasi deskripsi */
-.card {
-  width: 220px;
-  min-height: 320px; /* Diperbesar dari 280px */
-  padding: 20px;
-  text-align: center;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.3s ease;
-}
-
-/* Mobile responsive untuk deskripsi */
-@media (max-width: 768px) {
   .card {
-    min-height: 290px; /* Sesuaikan untuk mobile */
+    width: calc(33.333% - 13px);
+    min-height: 260px;
+  }
+
+  .info-modal-content {
+    max-height: 70vh;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .card-info-btn {
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card-info-btn,
+  .custom-tooltip,
+  .info-modal,
+  .info-modal-content {
+    transition: none;
   }
   
-  .card-description {
-    font-size: 0.8rem;
-    -webkit-line-clamp: 2; /* Batasi ke 2 baris di mobile */
-    min-height: 40px;
-  }
-}
-
-@media (max-width: 480px) {
-  .card {
-    min-height: 270px;
-  }
-  
-  .card-description {
-    font-size: 0.75rem;
-    margin: 8px 0;
-    min-height: 35px;
+  .card:hover {
+    transform: none;
   }
 }

@@ -128,13 +128,19 @@ main {
   padding: 0 20px;
 }
 
+/* Card Wrapper untuk positioning info button */
+.layanan-card-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .layanan-card {
-  width: 160px;
+  width: 180px;
   text-align: center;
   cursor: pointer;
   text-decoration: none;
   color: #333;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
   padding: 15px;
   border-radius: 12px;
   background: #fff;
@@ -142,13 +148,16 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 200px; /* Ditingkatkan untuk menampung deskripsi */
+  min-height: 220px;
+  border: 2px solid transparent;
 }
 
 .layanan-card:hover {
   transform: translateY(-5px);
   text-decoration: none;
   color: #333;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  border-color: #e3f2fd;
 }
 
 .layanan-card .logo-wrapper {
@@ -173,39 +182,206 @@ main {
 .layanan-card .layanan-nama {
   display: block;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.3;
   margin-bottom: 8px;
   color: #333;
+  text-align: center;
 }
 
-/* Styling untuk deskripsi layanan */
 .layanan-card .layanan-deskripsi {
   display: block;
   font-size: 0.75rem;
   color: #666;
-  line-height: 1.3;
+  line-height: 1.4;
   text-align: center;
   margin-top: auto;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-  max-height: 32px;
+  flex: 1;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
-.layanan-card .layanan-deskripsi:hover {
-  color: #555;
+/* Info Button */
+.layanan-info-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 123, 255, 0.9);
+  color: white;
+  border: none;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: scale(0.8);
+  z-index: 10;
 }
 
-/* Backward compatibility - jika masih ada span tanpa class */
-.layanan-card span:not(.layanan-nama):not(.layanan-deskripsi) {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 500;
+.layanan-card-wrapper:hover .layanan-info-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.layanan-info-btn:hover {
+  background: rgba(0, 123, 255, 1);
+  transform: scale(1.1);
+}
+
+/* Custom Tooltip */
+.custom-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  max-width: 280px;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.custom-tooltip.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.custom-tooltip.bottom {
+  transform: translateY(-5px);
+}
+
+.custom-tooltip.bottom.show {
+  transform: translateY(0);
+}
+
+.custom-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.9);
+}
+
+.custom-tooltip.bottom::before {
+  top: 100%;
+  bottom: auto;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  border-bottom-color: transparent;
+}
+
+/* Info Modal */
+.info-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.info-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.info-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.info-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  max-width: 450px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+}
+
+.info-modal.show .info-modal-content {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.info-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.info-modal-close:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.info-modal-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  padding-right: 40px;
+  color: #333;
   line-height: 1.3;
-  margin-top: auto;
+}
+
+.info-modal-badge {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.info-modal-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555;
+  text-align: left;
+  white-space: pre-wrap;
 }
 
 /* Footer */
@@ -304,7 +480,7 @@ html.no-scroll {
 
 /* Tombol Kembali ke Atas */
 #backToTopBtn {
-  display: none; /* Awalnya tersembunyi */
+  display: none;
   position: fixed;
   bottom: 25px;
   right: 25px;
@@ -334,7 +510,6 @@ html.no-scroll {
 
 /* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
-  /* Header Mobile Fix */
   .header {
     padding: 15px 0;
     text-align: center;
@@ -379,7 +554,6 @@ html.no-scroll {
     text-align: center;
   }
 
-  /* Section Mobile */
   .section {
     padding: 40px 0;
   }
@@ -389,21 +563,18 @@ html.no-scroll {
     padding: 0 20px;
   }
 
-  /* Search Mobile */
   .search-input {
     width: calc(100% - 40px);
     max-width: 350px;
     margin: 0 20px;
   }
 
-  /* Bidang Section Mobile */
   .bidang-title {
     font-size: 1.2rem;
     padding: 0 20px;
     margin-bottom: 15px;
   }
 
-  /* Grid Mobile */
   .grid-container {
     gap: 15px;
     padding: 0 15px;
@@ -412,10 +583,10 @@ html.no-scroll {
 
   .layanan-card {
     width: calc(50% - 7.5px);
-    min-width: 120px;
-    max-width: 150px;
+    min-width: 140px;
+    max-width: 170px;
     padding: 12px;
-    min-height: 180px; /* Disesuaikan untuk mobile */
+    min-height: 200px;
   }
 
   .layanan-card .logo-wrapper {
@@ -432,11 +603,37 @@ html.no-scroll {
 
   .layanan-card .layanan-deskripsi {
     font-size: 0.7rem;
-    -webkit-line-clamp: 2;
-    max-height: 28px;
   }
 
-  /* Footer Mobile */
+  .layanan-info-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    top: 5px;
+    right: 5px;
+    opacity: 1; /* Always visible on mobile */
+  }
+
+  /* Hide custom tooltip on mobile */
+  .custom-tooltip {
+    display: none;
+  }
+
+  /* Modal responsive */
+  .info-modal-content {
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  .info-modal-title {
+    font-size: 1.1rem;
+    padding-right: 35px;
+  }
+
+  .info-modal-description {
+    font-size: 0.9rem;
+  }
+
   .footer {
     padding: 30px 20px;
   }
@@ -456,7 +653,6 @@ html.no-scroll {
     margin: 8px 0;
   }
 
-  /* Iframe Mobile Fix */
   .iframe-fullscreen {
     top: 0;
     padding: 15px;
@@ -485,7 +681,7 @@ html.no-scroll {
     width: calc(100% - 30px);
     max-width: 200px;
     margin: 0 15px;
-    min-height: 160px;
+    min-height: 190px;
   }
 
   .grid-container {
@@ -503,8 +699,7 @@ html.no-scroll {
   }
 
   .layanan-card .layanan-deskripsi {
-    font-size: 0.7rem;
-    -webkit-line-clamp: 2;
+    font-size: 0.75rem;
   }
 
   .nav-menu ul {
@@ -517,6 +712,10 @@ html.no-scroll {
 
   .bidang-title {
     font-size: 1.1rem;
+  }
+
+  .info-modal-content {
+    padding: 18px;
   }
 }
 
@@ -534,6 +733,32 @@ html.no-scroll {
 
   .layanan-card {
     width: calc(33.333% - 10px);
-    min-height: 160px;
+    min-height: 180px;
+  }
+
+  .info-modal-content {
+    max-height: 70vh;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .layanan-info-btn {
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .layanan-card,
+  .layanan-info-btn,
+  .custom-tooltip,
+  .info-modal,
+  .info-modal-content {
+    transition: none;
+  }
+  
+  .layanan-card:hover {
+    transform: none;
   }
 }
