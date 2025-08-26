@@ -23,7 +23,8 @@ $id = intval($_POST['id'] ?? 0);
 $nama = trim($_POST['nama'] ?? '');
 $url = trim($_POST['url'] ?? '');
 $jenis = $_POST['jenis'] ?? '';
-$bidang = trim($_POST['bidang'] ?? '');
+$bidang_in = trim($_POST['bidang'] ?? '');
+$deskripsi = trim($_POST['deskripsi'] ?? '');
 $highlight = isset($_POST['highlight']) ? 1 : 0;
 
 if (!in_array($jenis, ['publik', 'internal'])) {
@@ -31,6 +32,35 @@ if (!in_array($jenis, ['publik', 'internal'])) {
   header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
   exit;
 }
+
+// Validasi input wajib
+if ($nama === '' || $url === '' || $bidang_in === '' || $deskripsi === '') {
+  $_SESSION['error'] = "Semua field wajib diisi.";
+  header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
+  exit;
+}
+
+// Validasi panjang field
+if (strlen($nama) > 100 || strlen($bidang_in) > 100 || strlen($url) > 255 || strlen($deskripsi) > 500) {
+  $_SESSION['error'] = "Input terlalu panjang.";
+  header("Location: edit.php?id=$id&jenis=" . urlencode($jenis));
+  exit;
+}
+
+// 🔹 Normalisasi bidang (huruf depan kapital)
+$bidang_in = ucfirst(strtolower($bidang_in));
+
+// 🔹 Cek apakah bidang sudah ada (case-insensitive)
+$stmt = $conn->prepare("SELECT bidang FROM layanan WHERE LOWER(bidang) = LOWER(?) LIMIT 1");
+$stmt->bind_param("s", $bidang_in);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($row = $result->fetch_assoc()) {
+  $bidang = $row['bidang']; // gunakan yang sudah ada
+} else {
+  $bidang = $bidang_in; // pakai hasil normalisasi
+}
+$stmt->close();
 
 // Ambil data lama (gunakan prepared statement)
 $stmt = $conn->prepare("SELECT logo FROM layanan WHERE id = ?");
@@ -95,8 +125,8 @@ if (!empty($_FILES['logo']['name'])) {
 }
 
 // Simpan perubahan (gunakan prepared statement)
-$stmt = $conn->prepare("UPDATE layanan SET nama=?, url=?, logo=?, bidang=?, highlight=? WHERE id=?");
-$stmt->bind_param("ssssii", $nama, $url, $logoName, $bidang, $highlight, $id);
+$stmt = $conn->prepare("UPDATE layanan SET nama=?, url=?, logo=?, bidang=?, deskripsi=?, highlight=? WHERE id=?");
+$stmt->bind_param("sssssii", $nama, $url, $logoName, $bidang, $deskripsi, $highlight, $id);
 
 if ($stmt->execute()) {
   header("Location: index.php?jenis=" . urlencode($jenis));

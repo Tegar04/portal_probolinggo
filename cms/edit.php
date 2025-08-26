@@ -63,7 +63,7 @@ if (!in_array($jenis, ['publik', 'internal'])) {
       </div>
       <a href="index.php" class="<?= $jenis === '' ? 'active' : '' ?>">Semua Layanan</a>
       <a href="index.php?jenis=publik" class="<?= $jenis === 'publik' ? 'active' : '' ?>">Layanan Publik</a>
-      <a href="index.php?jenis=internal" class="<?= $jenis === 'internal' ? 'active' : '' ?>">Aplikasi Internal</a>
+      <a href="index.php?jenis=internal" class="<?= $jenis === 'internal' ? 'active' : '' ?>">Layanan Pemerintahan</a>
       <a href="slider.php" class="<?= basename($_SERVER['PHP_SELF']) === 'slider.php' ? 'active' : '' ?>">Slider Header</a>
     </div>
     <a href="logout.php" class="logout-link">Logout</a>
@@ -91,6 +91,12 @@ if (!in_array($jenis, ['publik', 'internal'])) {
       <div class="form-group">
         <label for="bidang">Bidang</label>
         <input type="text" id="bidang" name="bidang" value="<?= htmlspecialchars($data['bidang']) ?>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="deskripsi">Deskripsi Layanan</label>
+        <textarea id="deskripsi" name="deskripsi" rows="4" maxlength="500" required><?= htmlspecialchars($data['deskripsi'] ?? '') ?></textarea>
+        <small>Maksimal 500 karakter.</small>
       </div>
 
       <div class="form-group">

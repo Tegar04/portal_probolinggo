@@ -14,7 +14,7 @@ include '../db/koneksi.php';
   <title>Kelola Slider Header</title>
   <link rel="stylesheet" href="/cms/css/cms.css">
 </head>
-<body>
+<body class="slider-page">
   <div class="layout">
     
     <!-- SIDEBAR -->
@@ -27,7 +27,7 @@ include '../db/koneksi.php';
         </div>
         <a href="index.php">Semua Layanan</a>
         <a href="index.php?jenis=publik">Layanan Publik</a>
-        <a href="index.php?jenis=internal">Aplikasi Internal</a>
+        <a href="index.php?jenis=internal">Layanan Pemerintahan</a>
         <a href="slider.php" class="active">Slider Header</a>
       </div>
       <a href="logout.php" class="logout-link">Logout</a>
@@ -45,7 +45,6 @@ include '../db/koneksi.php';
           <thead>
             <tr>
               <th>No</th>
-              <th>Judul</th>
               <th>Gambar</th>
               <th>Urutan</th>
               <th>Status</th>
@@ -57,23 +56,54 @@ include '../db/koneksi.php';
             $result = mysqli_query($conn, "SELECT * FROM slider ORDER BY urutan ASC");
             $no = 1;
             while ($row = mysqli_fetch_assoc($result)) {
+                $status_class = $row['status'] ? 'status-active' : 'status-inactive';
+                $status_icon = $row['status'] ? '✅' : '❌';
             ?>
               <tr>
-                <td><?= $no++ ?></td>
-                <td><?= htmlspecialchars($row['judul']) ?></td>
-                <td><img src="../assets/slider/<?= htmlspecialchars($row['gambar']) ?>" class="logo-preview" alt="Slider"></td>
-                <td><?= (int)$row['urutan'] ?></td>
-                <td><?= $row['status'] ? '✅' : '❌' ?></td>
-                <td class="actions">
-                  <a href="slider_edit.php?id=<?= $row['id'] ?>" class="edit">Edit</a>
-                  <a href="slider_hapus.php?id=<?= $row['id'] ?>" class="delete" onclick="return confirm('Hapus slider ini?')">Delete</a>
+                <td data-label="No"><?= $no++ ?></td>
+                <td class="thumb-cell" data-label="Gambar">
+                  <img src="../assets/slider/<?= htmlspecialchars($row['gambar']) ?>" 
+                      class="slider-thumb" 
+                      alt="Slider <?= $no-1 ?>"
+                      loading="lazy">
+                </td>
+                <td data-label="Urutan">
+                  <span class="urutan-badge"><?= (int)$row['urutan'] ?></span>
+                </td>
+                <td data-label="Status">
+                  <span class="<?= $status_class ?>"><?= $status_icon ?></span>
+                </td>
+                <td class="actions" data-label="Actions">
+                  <a href="slider_edit.php?id=<?= $row['id'] ?>" class="edit" title="Edit Slider">Edit</a>
+                  <a href="slider_hapus.php?id=<?= $row['id'] ?>" class="delete" 
+                     onclick="return confirm('Apakah Anda yakin ingin menghapus slider ini?')" 
+                     title="Hapus Slider">Delete</a>
                 </td>
               </tr>
             <?php } ?>
+            
+            <?php if (mysqli_num_rows($result) == 0): ?>
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: #666;">
+                  <em>Belum ada data slider. <a href="slider_tambah.php">Tambah slider pertama</a>.</em>
+                </td>
+              </tr>
+            <?php endif; ?>
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
+  <script>
+    // Optional: Add confirmation with better styling
+    document.querySelectorAll('.delete').forEach(function(deleteBtn) {
+      deleteBtn.addEventListener('click', function(e) {
+        if (!confirm('Apakah Anda yakin ingin menghapus slider ini?\nTindakan ini tidak dapat dibatalkan.')) {
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
 </body>
 </html>

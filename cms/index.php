@@ -44,7 +44,7 @@ include 'pagination.php';
         </div>
         <a href="index.php" class="<?= !isset($_GET['jenis']) ? 'active' : '' ?>">Semua Layanan</a>
         <a href="?jenis=publik" class="<?= ($_GET['jenis'] ?? '') === 'publik' ? 'active' : '' ?>">Layanan Publik</a>
-        <a href="?jenis=internal" class="<?= ($_GET['jenis'] ?? '') === 'internal' ? 'active' : '' ?>">Aplikasi Internal</a>
+        <a href="?jenis=internal" class="<?= ($_GET['jenis'] ?? '') === 'internal' ? 'active' : '' ?>">Layanan Pemerintahan</a>
         <a href="slider.php" class="<?= basename($_SERVER['PHP_SELF']) === 'slider.php' ? 'active' : '' ?>">Slider Header</a>
       </div>
       <a href="logout.php" class="logout-link">Logout</a>
@@ -90,6 +90,7 @@ include 'pagination.php';
                 <th>Layanan</th>
                 <th>Jenis</th>
                 <th>Bidang</th>
+                <th>Deskripsi</th>
                 <th>Logo</th>
                 <th>URL</th>
                 <th>Highlight</th>
@@ -110,7 +111,7 @@ include 'pagination.php';
                 }
                 if (!empty($search)) {
                   $searchSafe = mysqli_real_escape_string($conn, $search);
-                  $countQuery .= " AND (nama LIKE '%$searchSafe%' OR bidang LIKE '%$searchSafe%')";
+                  $countQuery .= " AND (nama LIKE '%$searchSafe%' OR bidang LIKE '%$searchSafe%' OR deskripsi LIKE '%$searchSafe%')";
                 }
                 $result = mysqli_query($conn, $countQuery);
                 $total_data = mysqli_fetch_assoc($result)['total'];
@@ -121,7 +122,7 @@ include 'pagination.php';
                   $dataQuery .= " AND jenis='$jenis'";
                 }
                 if (!empty($search)) {
-                  $dataQuery .= " AND (nama LIKE '%$searchSafe%' OR bidang LIKE '%$searchSafe%')";
+                  $dataQuery .= " AND (nama LIKE '%$searchSafe%' OR bidang LIKE '%$searchSafe%' OR deskripsi LIKE '%$searchSafe%')";
                 }
                 $dataQuery .= " ORDER BY nama ASC LIMIT $offset, $limit";
 
@@ -135,6 +136,9 @@ include 'pagination.php';
                 <td><?= htmlspecialchars($row['nama']) ?></td>
                 <td><?= ucfirst($row['jenis']) ?></td>
                 <td><?= htmlspecialchars($row['bidang']) ?></td>
+                <td title="<?= htmlspecialchars($row['deskripsi'] ?? '') ?>">
+                  <?= htmlspecialchars(substr($row['deskripsi'] ?? '', 0, 50)) ?><?= strlen($row['deskripsi'] ?? '') > 50 ? '...' : '' ?>
+                </td>
                 <td><img src="../assets/layanan/<?= htmlspecialchars($row['logo']) ?>" class="logo-preview"></td>
                 <td><input type="text" value="<?= htmlspecialchars($row['url']) ?>" readonly></td>
                 <td><?= $row['highlight'] ? '✅' : '❌' ?></td>

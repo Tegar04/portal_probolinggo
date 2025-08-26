@@ -15,7 +15,6 @@ if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_tok
 }
 
 $id     = (int) $_POST['id'];
-$judul  = mysqli_real_escape_string($conn, $_POST['judul']);
 $urutan = (int) $_POST['urutan'];
 $status = isset($_POST['status']) ? 1 : 0;
 
@@ -30,40 +29,32 @@ if (!$slider) {
 
 $gambar = $slider['gambar'];
 
-// Jika upload gambar baru
-if (!empty($_FILES['gambar']['name'])) {
-  $targetDir  = "../assets/slider/";
-  $fileName   = time() . "_" . basename($_FILES["gambar"]["name"]);
-  $targetFile = $targetDir . $fileName;
-  $fileType   = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+// Jika ada gambar baru yang di-crop
+if (!empty($_POST['cropped_image'])) {
+  $imgData = $_POST['cropped_image'];
+  $imgData = str_replace('data:image/png;base64,', '', $imgData);
+  $imgData = str_replace(' ', '+', $imgData);
+  $decoded = base64_decode($imgData);
 
-  $allowedTypes = ["jpg", "jpeg", "png", "gif", "webp"];
-  if (!in_array($fileType, $allowedTypes)) {
-    $_SESSION['error'] = "Format file tidak valid.";
+  $fileName = time() . ".png";
+  $targetDir = "../assets/slider/";
+  $filePath = $targetDir . $fileName;
+
+  if (file_put_contents($filePath, $decoded)) {
+    // Hapus gambar lama
+    if (!empty($slider['gambar']) && file_exists("../assets/slider/" . $slider['gambar'])) {
+      unlink("../assets/slider/" . $slider['gambar']);
+    }
+    $gambar = $fileName;
+  } else {
+    $_SESSION['error'] = "Gagal menyimpan gambar baru.";
     header("Location: slider_edit.php?id=$id");
     exit;
   }
-  if ($_FILES["gambar"]["size"] > 2*1024*1024) {
-    $_SESSION['error'] = "Ukuran file terlalu besar. Maks. 2MB.";
-    header("Location: slider_edit.php?id=$id");
-    exit;
-  }
-  if (!move_uploaded_file($_FILES["gambar"]["tmp_name"], $targetFile)) {
-    $_SESSION['error'] = "Gagal mengupload file.";
-    header("Location: slider_edit.php?id=$id");
-    exit;
-  }
-
-  // hapus gambar lama
-  if (!empty($slider['gambar']) && file_exists("../assets/slider/" . $slider['gambar'])) {
-    unlink("../assets/slider/" . $slider['gambar']);
-  }
-
-  $gambar = $fileName;
 }
 
 // Update ke DB
-$query = "UPDATE slider SET judul='$judul', gambar='$gambar', urutan=$urutan, status=$status WHERE id=$id";
+$query = "UPDATE slider SET gambar='$gambar', urutan=$urutan, status=$status WHERE id=$id";
 if (mysqli_query($conn, $query)) {
   header("Location: slider.php?updated=1");
   exit;

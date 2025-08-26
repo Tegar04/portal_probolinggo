@@ -129,7 +129,7 @@ main {
 }
 
 .layanan-card {
-  width: 140px;
+  width: 160px;
   text-align: center;
   cursor: pointer;
   text-decoration: none;
@@ -142,6 +142,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 200px; /* Ditingkatkan untuk menampung deskripsi */
 }
 
 .layanan-card:hover {
@@ -169,7 +170,37 @@ main {
   object-fit: contain;
 }
 
-.layanan-card span {
+.layanan-card .layanan-nama {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* Styling untuk deskripsi layanan */
+.layanan-card .layanan-deskripsi {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  line-height: 1.3;
+  text-align: center;
+  margin-top: auto;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  max-height: 32px;
+}
+
+.layanan-card .layanan-deskripsi:hover {
+  color: #555;
+}
+
+/* Backward compatibility - jika masih ada span tanpa class */
+.layanan-card span:not(.layanan-nama):not(.layanan-deskripsi) {
   display: block;
   font-size: 0.9rem;
   font-weight: 500;
@@ -384,6 +415,7 @@ html.no-scroll {
     min-width: 120px;
     max-width: 150px;
     padding: 12px;
+    min-height: 180px; /* Disesuaikan untuk mobile */
   }
 
   .layanan-card .logo-wrapper {
@@ -392,9 +424,16 @@ html.no-scroll {
     margin-bottom: 10px;
   }
 
-  .layanan-card span {
+  .layanan-card .layanan-nama {
     font-size: 0.8rem;
     line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .layanan-card .layanan-deskripsi {
+    font-size: 0.7rem;
+    -webkit-line-clamp: 2;
+    max-height: 28px;
   }
 
   /* Footer Mobile */
@@ -446,6 +485,7 @@ html.no-scroll {
     width: calc(100% - 30px);
     max-width: 200px;
     margin: 0 15px;
+    min-height: 160px;
   }
 
   .grid-container {
@@ -456,6 +496,15 @@ html.no-scroll {
   .layanan-card .logo-wrapper {
     width: 70px;
     height: 70px;
+  }
+
+  .layanan-card .layanan-nama {
+    font-size: 0.85rem;
+  }
+
+  .layanan-card .layanan-deskripsi {
+    font-size: 0.7rem;
+    -webkit-line-clamp: 2;
   }
 
   .nav-menu ul {
@@ -485,5 +534,6 @@ html.no-scroll {
 
   .layanan-card {
     width: calc(33.333% - 10px);
+    min-height: 160px;
   }
 }

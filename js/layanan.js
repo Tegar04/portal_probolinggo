@@ -45,7 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const keyword = searchInput.value.toLowerCase().trim();
       const hasilFilter = layananList.filter(item =>
         (item.nama && item.nama.toLowerCase().includes(keyword)) ||
-        (item.bidang && item.bidang.toLowerCase().includes(keyword))
+        (item.bidang && item.bidang.toLowerCase().includes(keyword)) ||
+        (item.deskripsi && item.deskripsi.toLowerCase().includes(keyword))
       );
       tampilkanPerBidang(hasilFilter);
     });
@@ -140,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Fungsi baru: versi aman tanpa innerHTML ---
+  // --- Fungsi baru: versi aman tanpa innerHTML dengan deskripsi ---
   function renderBidangSectionSafe(judul, layanan) {
     const section = document.createElement('div');
     section.classList.add('bidang-section');
@@ -180,11 +181,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         logoWrapper.appendChild(img);
 
-        const span = document.createElement('span');
-        span.textContent = item.nama;
+        const namaSpan = document.createElement('span');
+        namaSpan.className = 'layanan-nama';
+        namaSpan.textContent = item.nama;
+
+        // Tambahkan deskripsi
+        const deskripsiSpan = document.createElement('span');
+        deskripsiSpan.className = 'layanan-deskripsi';
+        deskripsiSpan.textContent = item.deskripsi || 'Tidak ada deskripsi tersedia';
+        deskripsiSpan.title = item.deskripsi || 'Tidak ada deskripsi tersedia'; // Tooltip
 
         link.appendChild(logoWrapper);
-        link.appendChild(span);
+        link.appendChild(namaSpan);
+        link.appendChild(deskripsiSpan);
 
         grid.appendChild(link);
       });
@@ -193,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return section;
   }
 
-  // --- Fungsi lama masih ada (tidak dihapus) ---
+  // --- Fungsi lama dengan deskripsi (untuk kompatibilitas) ---
   function renderBidangSection(judul, layanan) {
     const section = document.createElement('div');
     section.classList.add('bidang-section');
@@ -215,7 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <img src="assets/layanan/${item.logo}" alt="${item.nama}" 
                  onerror="this.src='assets/logo/default.png'" />
           </div>
-          <span>${item.nama}</span>
+          <span class="layanan-nama">${item.nama}</span>
+          <span class="layanan-deskripsi" title="${item.deskripsi || 'Tidak ada deskripsi tersedia'}">${item.deskripsi || 'Tidak ada deskripsi tersedia'}</span>
         </a>
       `).join('');
 

@@ -19,11 +19,11 @@ if (!in_array($jenis, ['publik', 'internal'], true)) {
     exit;
 }
 
-// Query data sesuai filter
+// Query data sesuai filter - tambah kolom deskripsi
 if ($highlightOnly) {
-    $sql = "SELECT * FROM layanan WHERE jenis = ? AND highlight = 1 ORDER BY id DESC";
+    $sql = "SELECT id, nama, bidang, deskripsi, url, logo, jenis, highlight FROM layanan WHERE jenis = ? AND highlight = 1 ORDER BY id DESC";
 } else {
-    $sql = "SELECT * FROM layanan WHERE jenis = ? ORDER BY id DESC";
+    $sql = "SELECT id, nama, bidang, deskripsi, url, logo, jenis, highlight FROM layanan WHERE jenis = ? ORDER BY id DESC";
 }
 
 $stmt = $conn->prepare($sql);
@@ -35,19 +35,22 @@ $data = [];
 while ($row = $result->fetch_assoc()) {
     // Sanitasi output agar aman dari XSS
     $row['nama'] = htmlspecialchars($row['nama'], ENT_QUOTES, 'UTF-8');
+    $row['bidang'] = htmlspecialchars($row['bidang'], ENT_QUOTES, 'UTF-8');
+    $row['deskripsi'] = htmlspecialchars($row['deskripsi'] ?? '', ENT_QUOTES, 'UTF-8');
     $row['logo'] = htmlspecialchars($row['logo'], ENT_QUOTES, 'UTF-8');
-
+    
     // Validasi dan sanitasi URL
     if (filter_var($row['url'], FILTER_VALIDATE_URL)) {
         $row['url'] = $row['url'];
     } else {
         $row['url'] = '';
     }
-
+    
     // Buat hash verifikasi untuk URL
     $row['hash'] = hash_hmac('sha256', $row['url'], $secretKey);
-
+    
     $data[] = $row;
 }
 
 echo json_encode($data);
+?>

@@ -44,7 +44,7 @@ $jenis = $_GET['jenis'] ?? '';
         </div>
         <a href="index.php" class="<?= $jenis === '' ? 'active' : '' ?>">Semua Layanan</a>
         <a href="index.php?jenis=publik" class="<?= $jenis === 'publik' ? 'active' : '' ?>">Layanan Publik</a>
-        <a href="index.php?jenis=internal" class="<?= $jenis === 'internal' ? 'active' : '' ?>">Aplikasi Internal</a>
+        <a href="index.php?jenis=internal" class="<?= $jenis === 'internal' ? 'active' : '' ?>">Layanan Pemerintahan</a>
         <a href="slider.php" class="<?= basename($_SERVER['PHP_SELF']) === 'slider.php' ? 'active' : '' ?>">Slider Header</a>
       </div>
       <a href="logout.php" class="logout-link">Logout</a>
@@ -71,6 +71,12 @@ $jenis = $_GET['jenis'] ?? '';
         <div class="form-group">
           <label for="bidang">Bidang</label>
           <input type="text" name="bidang" id="bidang" maxlength="100" placeholder="Contoh: Kependudukan, Perizinan, dll" required>
+        </div>
+
+        <div class="form-group">
+          <label for="deskripsi">Deskripsi Layanan</label>
+          <textarea name="deskripsi" id="deskripsi" rows="4" maxlength="500" placeholder="Jelaskan secara singkat tentang layanan ini..." required></textarea>
+          <small>Maksimal 500 karakter.</small>
         </div>
 
         <div class="form-group">

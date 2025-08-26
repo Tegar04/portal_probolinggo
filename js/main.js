@@ -37,6 +37,12 @@ function tampilkanLayananKeGridSafe(gridId, data) {
       title.className = "card-title";
       title.textContent = item.nama;
 
+      // Tambah deskripsi
+      const description = document.createElement("p");
+      description.className = "card-description";
+      description.textContent = item.deskripsi || "Tidak ada deskripsi tersedia";
+      description.title = item.deskripsi || "Tidak ada deskripsi tersedia"; // Tooltip
+
       const btn = document.createElement("button");
       btn.className = "card-button";
       btn.textContent = "Kunjungi";
@@ -44,13 +50,14 @@ function tampilkanLayananKeGridSafe(gridId, data) {
 
       card.appendChild(logoWrapper);
       card.appendChild(title);
+      card.appendChild(description);
       card.appendChild(btn);
 
       grid.appendChild(card);
     });
 }
 
-// --- Fungsi lama tetap ada ---
+// --- Fungsi lama dengan deskripsi ---
 function tampilkanLayananKeGrid(gridId, data) {
   const grid = document.getElementById(gridId);
   if (!Array.isArray(data)) {
@@ -66,6 +73,7 @@ function tampilkanLayananKeGrid(gridId, data) {
           <img src="assets/layanan/${item.logo}" alt="${item.nama}" onerror="this.src='assets/logo/default.png'" />
         </div>
         <h3 class="card-title">${item.nama}</h3>
+        <p class="card-description" title="${item.deskripsi || 'Tidak ada deskripsi tersedia'}">${item.deskripsi || 'Tidak ada deskripsi tersedia'}</p>
         <button onclick="tampilkanIframe('${item.url}', '${item.hash}')" class="card-button">Kunjungi</button>
       </div>
     `).join('');
@@ -75,7 +83,10 @@ function filterLayanan(gridId, keyword) {
   const data = gridId === 'internalGrid' ? internalData : publikData;
   tampilkanLayananKeGridSafe(
     gridId,
-    data.filter(item => item.nama.toLowerCase().includes(keyword.toLowerCase()))
+    data.filter(item => 
+      item.nama.toLowerCase().includes(keyword.toLowerCase()) ||
+      (item.deskripsi && item.deskripsi.toLowerCase().includes(keyword.toLowerCase()))
+    )
   );
 }
 
@@ -94,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   }
 
-  // Load internal services
+  // Load internal highlight (untuk ditampilkan)
   fetch('api/get_layanan.php?jenis=internal&highlight=1')
     .then(res => res.json())
     .then(data => {
@@ -107,7 +118,17 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('internalGrid').innerHTML = "<p>Gagal memuat layanan internal.</p>";
     });
 
-  // Load public services
+  // Load total internal (hanya untuk jumlah)
+  fetch('api/get_layanan.php?jenis=internal')
+    .then(res => res.json())
+    .then(allData => {
+      if (!Array.isArray(allData)) throw new Error("Data bukan array");
+      document.getElementById("countInternal").textContent = `Jumlah Layanan: ${allData.length}`;
+    })
+    .catch(err => console.error('Gagal menghitung jumlah layanan internal:', err));
+
+
+  // Load public highlight (untuk ditampilkan)
   fetch('api/get_layanan.php?jenis=publik&highlight=1')
     .then(res => res.json())
     .then(data => {
@@ -119,6 +140,15 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Gagal memuat layanan publik:', err);
       document.getElementById('publikGrid').innerHTML = "<p>Gagal memuat layanan publik.</p>";
     });
+
+// Load total public (hanya untuk jumlah)
+fetch('api/get_layanan.php?jenis=publik')
+  .then(res => res.json())
+  .then(allData => {
+    if (!Array.isArray(allData)) throw new Error("Data bukan array");
+    document.getElementById("countPublik").textContent = `Jumlah Layanan: ${allData.length}`;
+  })
+  .catch(err => console.error('Gagal menghitung jumlah layanan publik:', err));
 
   // --- Tombol Kembali ke Atas ---
   const backToTopBtn = document.getElementById("backToTopBtn");
@@ -211,7 +241,9 @@ function initSlider(slidesData) {
     const slide = document.createElement("div");
     slide.className = "slide" + (i===0 ? " active" : "");
     slide.style.backgroundImage = `url(${item.gambar})`;
-    slide.innerHTML = `<div class="hero-content"><h1>${item.judul}</h1></div>`;
+
+    // Tidak perlu judul, hanya gambar
+    slide.innerHTML = `<div class="hero-content"></div>`;
     container.appendChild(slide);
 
     const dot = document.createElement("span");

@@ -120,60 +120,318 @@ body {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn:hover {
   background-color: #1f2c46;
 }
 
-/* === TABLE === */
+/* === GENERAL TABLE STYLES === */
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  border: 1px solid #e0e6ed;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 th, td {
   padding: 12px 10px;
-  text-align: left;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #e0e6ed;
 }
 
 th {
-  background-color: #f0f2f7;
-  color: #333;
+  background-color: #f8fafc;
+  color: #374151;
   font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 tr:nth-child(even) {
-  background-color: #f9fafc;
+  background-color: #f9fafb;
 }
 
+tr:hover {
+  background-color: #f3f4f6;
+  transition: background-color 0.2s ease;
+}
+
+/* Specific column alignments untuk index.php */
+th:nth-child(1), td:nth-child(1) { /* No */
+  width: 6%;
+  text-align: center;
+}
+
+th:nth-child(2), td:nth-child(2) { /* Layanan */
+  width: 18%;
+  text-align: left;
+  padding-left: 15px;
+}
+
+th:nth-child(3), td:nth-child(3) { /* Jenis */
+  width: 10%;
+  text-align: center;
+}
+
+th:nth-child(4), td:nth-child(4) { /* Bidang */
+  width: 12%;
+  text-align: center;
+}
+
+th:nth-child(5), td:nth-child(5) { /* Logo */
+  width: 8%;
+  text-align: center;
+}
+
+th:nth-child(6), td:nth-child(6) { /* URL */
+  width: 25%;
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+th:nth-child(7), td:nth-child(7) { /* Highlight */
+  width: 10%;
+  text-align: center;
+}
+
+th:nth-child(8), td:nth-child(8) { /* Actions */
+  width: 11%;
+  text-align: center;
+}
+
+/* URL field styling */
+td:nth-child(6) input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Jenis badge styling */
+td:nth-child(3) {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Status/Highlight styling */
+td:nth-child(7) {
+  font-size: 16px;
+}
+
+/* Bidang styling */
 td:nth-child(4) {
-  max-width: 150px;
-  word-wrap: break-word;
+  font-weight: 500;
+  color: #4b5563;
 }
 
+/* === FIXED LOGO PREVIEW STYLES (untuk index.php) === */
 .logo-preview {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   object-fit: contain;
   display: block;
-  margin: auto;
+  margin: 0 auto;
+  border: 1px solid #e0e6ed;
+  border-radius: 4px;
+  padding: 3px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* === SLIDER SPECIFIC STYLES (hanya untuk slider.php) === */
+body.slider-page table {
+  border: 1px solid #e0e6ed;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+body.slider-page th, 
+body.slider-page td {
+  padding: 15px 12px;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #e0e6ed;
+}
+
+body.slider-page th {
+  background-color: #f8fafc;
+  color: #374151;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Specific column widths dan alignment untuk slider */
+body.slider-page th:nth-child(1), 
+body.slider-page td:nth-child(1) { /* No */
+  width: 8%;
+  text-align: center;
+}
+
+body.slider-page th:nth-child(2), 
+body.slider-page td:nth-child(2) { /* Gambar */
+  width: 35%;
+  text-align: center;
+}
+
+body.slider-page th:nth-child(3), 
+body.slider-page td:nth-child(3) { /* Urutan */
+  width: 12%;
+  text-align: center;
+}
+
+body.slider-page th:nth-child(4), 
+body.slider-page td:nth-child(4) { /* Status */
+  width: 15%;
+  text-align: center;
+}
+
+body.slider-page th:nth-child(5), 
+body.slider-page td:nth-child(5) { /* Actions */
+  width: 30%;
+  text-align: center;
+}
+
+body.slider-page tr:hover {
+  background-color: #f3f4f6;
+  transition: background-color 0.2s ease;
+}
+
+/* === SLIDER IMAGE STYLES === */
+body.slider-page .thumb-cell {
+  text-align: center;
+  vertical-align: middle;
+  padding: 10px;
+}
+
+body.slider-page .slider-thumb {
+  max-width: 180px;
+  max-height: 80px;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 1px solid #e0e6ed;
+}
+
+/* === STATUS STYLES untuk slider === */
+body.slider-page .status-active {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+body.slider-page .status-inactive {
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* === URUTAN STYLING untuk slider === */
+body.slider-page .urutan-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #e0e7ff;
+  color: #3730a3;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 12px;
+  min-width: 20px;
+  text-align: center;
 }
 
 /* === ACTIONS === */
+.actions {
+  text-align: center;
+  white-space: nowrap;
+}
+
 .actions a {
-  margin-right: 10px;
+  display: inline-block;
+  margin: 0 3px;
+  padding: 5px 10px;
   text-decoration: none;
   font-weight: 500;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  vertical-align: middle;
 }
 
 .actions .edit {
-  color: #276ef1;
+  color: #2563eb;
+  background-color: #dbeafe;
+  border: 1px solid #93c5fd;
+}
+
+.actions .edit:hover {
+  background-color: #2563eb;
+  color: white;
 }
 
 .actions .delete {
-  color: #d32f2f;
+  color: #dc2626;
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+}
+
+.actions .delete:hover {
+  background-color: #dc2626;
+  color: white;
+}
+
+/* Enhanced actions untuk slider page */
+body.slider-page .actions {
+  white-space: nowrap;
+}
+
+body.slider-page .actions a {
+  display: inline-block;
+  margin: 0 4px;
+  padding: 6px 12px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+body.slider-page .actions .edit {
+  color: #2563eb;
+  background-color: #dbeafe;
+  border: 1px solid #93c5fd;
+}
+
+body.slider-page .actions .edit:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+body.slider-page .actions .delete {
+  color: #dc2626;
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+}
+
+body.slider-page .actions .delete:hover {
+  background-color: #dc2626;
+  color: white;
 }
 
 /* === PAGINATION === */
@@ -281,6 +539,59 @@ footer {
     font-size: 12px;
     display: inline-block;
     margin-bottom: 4px;
+  }
+
+  /* Mobile slider specific */
+  body.slider-page table {
+    font-size: 12px;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+
+  body.slider-page thead, 
+  body.slider-page tbody, 
+  body.slider-page th, 
+  body.slider-page td, 
+  body.slider-page tr {
+    display: block;
+  }
+
+  body.slider-page thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  body.slider-page tr {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: white;
+  }
+
+  body.slider-page td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50% !important;
+    text-align: left;
+  }
+
+  body.slider-page td:before {
+    content: attr(data-label) ": ";
+    position: absolute;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+  }
+
+  body.slider-page .slider-thumb {
+    max-width: 120px;
+    max-height: 60px;
   }
 
   footer {
